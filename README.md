@@ -4,6 +4,8 @@ This repository contains sample code for the group project of the [Industrial Au
 ## Introduction
 The project considers a paint production plant. A paint mixing station is composed of 5 paint tanks with unique colors (cyan, magenta, yellow, black and white color) and one mixing tank, as shown in the screenshot below. Each paint tank is controlled via an output valve, and the mixing tank can be emptied via a dedicated pump and output valve. Each tank has a level sensor measuring the level of the paint inside in a tank, as well as a flow meter measuring the paint outflow.
 
+![Screenshot](screenshot.png)
+
 ## Requirements
 * Python 3.7 or higher
 * [PyTango](https://pytango.readthedocs.io/)
