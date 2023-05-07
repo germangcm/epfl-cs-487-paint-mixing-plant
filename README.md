@@ -12,8 +12,13 @@ The project considers a paint production plant. A paint mixing station is compos
 * [Mixbox](https://github.com/scrtwpns/mixbox)
 * [PyQt5](https://pypi.org/project/PyQt5/)
 
-The PyTango and Mixbox libraries can be installed using `pip`:  
-`pip3 install -r requirements.txt`
+
+### Installation in TangoBox 9.3 Virtual Machine
+[TangoBox](https://tango-controls.readthedocs.io/en/latest/installation/virtualmachine.html) 9.3 is based on Ubuntu 18.04 and Python 3.6, which are both outdated. Therefore, the following installation procedure should be followed inside a terminal within the virtual machine:
+```
+sudo apt install python3-pip python3-tango python3-pyqt5
+pip3 install dataclasses pymixbox
+```
 
 ## User Guide
 
