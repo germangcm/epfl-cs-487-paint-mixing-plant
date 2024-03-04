@@ -10,7 +10,7 @@ class PaintTank(Device):
     """
     def init_device(self):
         super().init_device()
-        print("Initializing %s for %s" % (self.__class__.__name__, self.get_name()))
+        print("Initializing class %s for device %s" % (self.__class__.__name__, self.get_name()))
         # extract the tank name from the full device name, e.g. "epfl/station1/cyan" -> "cyan"
         tank_name = self.get_name().split('/')[-1]
         # get a reference to the simulated tank
