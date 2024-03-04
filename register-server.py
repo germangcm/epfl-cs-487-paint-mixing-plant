@@ -1,5 +1,6 @@
+import sys
 import argparse
-from tango import Database, DbDevInfo
+from tango import Database, DbDevInfo, ConnectionFailed
 
 # This script registers device servers for all paint tanks and mixing tank of one selected station
 parser = argparse.ArgumentParser(
@@ -10,7 +11,11 @@ parser.add_argument('station_name', help='a name of the paint mixing station (e.
 args = parser.parse_args()
 
 #  reference to the Tango database
-db = Database()
+try:
+    db = Database()
+except ConnectionFailed as e:
+    print("Error connecting to the Tango database:\n%s" % e)
+    sys.exit(0)
 
 for device_name in ["cyan", "magenta", "yellow", "black", "white", "mixer"]:
     device_info = DbDevInfo()
@@ -21,3 +26,4 @@ for device_name in ["cyan", "magenta", "yellow", "black", "white", "mixer"]:
     # define the device name
     device_info.name = "epfl/station1/%s" % device_name
     db.add_device(device_info)
+    print("Added device: %s\tinstance: %s\tclass: %s" % (device_info.name, device_info.server, device_info._class))
