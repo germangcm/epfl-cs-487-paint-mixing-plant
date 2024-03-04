@@ -71,27 +71,27 @@ class TankWidget(QWidget):
                          int(self.fill_level * (self.height() - self.MARGIN_BOTTOM - 4)))
         # draw valve symobl
         painter.setPen(QPen(Qt.black, 2, Qt.SolidLine))
-        painter.drawLine(self.width() / 2, self.height() - self.MARGIN_BOTTOM, self.width() / 2,
+        painter.drawLine(self.width() // 2, self.height() - self.MARGIN_BOTTOM, self.width() // 2,
                          self.height() - self.MARGIN_BOTTOM + 5)
-        painter.drawLine(self.width() / 2, self.height(), self.width() / 2,
+        painter.drawLine(self.width() // 2, self.height(), self.width() // 2,
                          self.height() - 5)
-        painter.drawLine(self.width() / 2 - self.VALVE_WIDTH, self.height() - self.MARGIN_BOTTOM + 5,
-                         self.width() / 2 + self.VALVE_WIDTH,
+        painter.drawLine(self.width() // 2 - self.VALVE_WIDTH, self.height() - self.MARGIN_BOTTOM + 5,
+                         self.width() // 2 + self.VALVE_WIDTH,
                          self.height() - 5)
-        painter.drawLine(self.width() / 2 - self.VALVE_WIDTH, self.height() - 5, self.width() / 2 + self.VALVE_WIDTH,
+        painter.drawLine(self.width() // 2 - self.VALVE_WIDTH, self.height() - 5, self.width() // 2 + self.VALVE_WIDTH,
                          self.height() - self.MARGIN_BOTTOM + 5)
-        painter.drawLine(self.width() / 2 - self.VALVE_WIDTH, self.height() - self.MARGIN_BOTTOM + 5,
-                         self.width() / 2 + self.VALVE_WIDTH,
+        painter.drawLine(self.width() // 2 - self.VALVE_WIDTH, self.height() - self.MARGIN_BOTTOM + 5,
+                         self.width() // 2 + self.VALVE_WIDTH,
                          self.height() - self.MARGIN_BOTTOM + 5)
-        painter.drawLine(self.width() / 2 - self.VALVE_WIDTH, self.height() - 5, self.width() / 2 + self.VALVE_WIDTH,
+        painter.drawLine(self.width() // 2 - self.VALVE_WIDTH, self.height() - 5, self.width() // 2 + self.VALVE_WIDTH,
                          self.height() - 5)
         # draw labels
         painter.drawText(
-            QRect(0, self.height() - self.MARGIN_BOTTOM, self.width() / 2 - self.VALVE_WIDTH, self.MARGIN_BOTTOM),
+            QRect(0, self.height() - self.MARGIN_BOTTOM, self.width() // 2 - self.VALVE_WIDTH, self.MARGIN_BOTTOM),
             Qt.AlignCenter, "%u%%" % self.valve)
         painter.drawText(
-            QRect(self.width() / 2 + self.VALVE_WIDTH, self.height() - self.MARGIN_BOTTOM,
-                  self.width() / 2 - self.VALVE_WIDTH, self.MARGIN_BOTTOM),
+            QRect(self.width() // 2 + self.VALVE_WIDTH, self.height() - self.MARGIN_BOTTOM,
+                  self.width() // 2 - self.VALVE_WIDTH, self.MARGIN_BOTTOM),
             Qt.AlignCenter, "%.1f l/s" % self.flow)
 
 
