@@ -38,7 +38,8 @@ The implementation assumes that the devices in Tango are named as follows: `epfl
 The device server instance for Tango can be started as follows:  
 `python3 PaintMixingStation.py <station_name>`
 
-Note: The device server needs to be registered with Tango before it can be used. This can be achieved using the `Jive` tool provided by Tango or using the `register-server.py` script in this repository.
+Note: The device server needs to be registered with Tango before it can be used. This can be achieved using the `Jive` tool provided by Tango or using the `register-server.py` script in this repository:  
+`register-server.py <station_name>`
 
 ### Graphical User Interface (GUI)
 The user interface can be used to visualize the current state of the paint mixing station. It connects as a client to Tango and is polling attributes and sending commands to/from the device server. The client assumes that the Tango attributes and commands are named according to the following scheme: `epfl/<station_name>/<tank_name>/<attribute_or_command_name>` (example: `epfl/station1/cyan/level`). To use the GUI with a different naming scheme, the global variables `TANGO_NAME_PREFIX`, `TANGO_ATTRIBUTE_*` and `TANGO_COMMAND_*` need to be modified accordingly.
