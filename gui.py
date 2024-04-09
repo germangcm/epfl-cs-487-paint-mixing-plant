@@ -189,8 +189,10 @@ class PaintTankWidget(QWidget):
         """
         set the value of the valve label
         """
-        self.slider.setValue(int(valve*100))
-        self.tank.setValve(valve*100)
+        if self.timer_slider is None and not self.slider.isSliderDown():
+            # user is not currently changing the slider
+            self.slider.setValue(int(valve*100))
+            self.tank.setValve(valve*100)
 
     def setFlow(self, flow):
         """
