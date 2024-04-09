@@ -209,7 +209,6 @@ class PaintTankWidget(QWidget):
         callback method for the "Fill" button
         """
         worker = TangoRunCommandWorker(self.name, TANGO_COMMAND_FILL)
-        worker.signal.done.connect(self.setLevel)
         self.threadpool.start(worker)
 
     def on_flush(self):
@@ -217,7 +216,6 @@ class PaintTankWidget(QWidget):
         callback method for the "Flush" button
         """
         worker = TangoRunCommandWorker(self.name, TANGO_COMMAND_FLUSH)
-        worker.signal.done.connect(self.setLevel)
         self.threadpool.start(worker)
 
 
