@@ -111,6 +111,8 @@ class PaintTankWidget(QWidget):
         self.worker.level.done.connect(self.setLevel)
         self.worker.flow.done.connect(self.setFlow)
         self.worker.color.done.connect(self.setColor)
+        self.worker.valve.done.connect(self.setValve)
+        
 
         if fill_button:
             button = QPushButton('Fill', self)
@@ -147,7 +149,7 @@ class PaintTankWidget(QWidget):
 
         self.setLayout(self.layout)
 
-        # set the valve attribute to fully clossed
+        # set the valve attribute to fully closed
         worker = TangoWriteAttributeWorker(self.name, TANGO_ATTRIBUTE_VALVE, self.slider.value() / 100.0)
         self.threadpool.start(worker)
         self.worker.start()
@@ -187,7 +189,8 @@ class PaintTankWidget(QWidget):
         """
         set the value of the valve label
         """
-        self.tank.setValve(self.slider.value())
+        self.slider.setValue(int(valve*100))
+        self.tank.setValve(valve*100)
 
     def setFlow(self, flow):
         """
@@ -349,6 +352,7 @@ class TangoBackgroundWorker(QThread):
         self.level = WorkerSignal()
         self.flow = WorkerSignal()
         self.color = WorkerSignal()
+        self.valve = WorkerSignal()
 
     def run(self):
         """
@@ -360,6 +364,7 @@ class TangoBackgroundWorker(QThread):
             level = AttributeProxy("%s/%s/%s" % (TANGO_NAME_PREFIX, self.name, TANGO_ATTRIBUTE_LEVEL))
             flow = AttributeProxy("%s/%s/%s" % (TANGO_NAME_PREFIX, self.name, TANGO_ATTRIBUTE_FLOW))
             color = AttributeProxy("%s/%s/%s" % (TANGO_NAME_PREFIX, self.name, TANGO_ATTRIBUTE_COLOR))
+            valve = AttributeProxy("%s/%s/%s" % (TANGO_NAME_PREFIX, self.name, TANGO_ATTRIBUTE_VALVE))
         except Exception as e:
             print("Error creating AttributeProxy for %s" % self.name)
             return
@@ -370,10 +375,12 @@ class TangoBackgroundWorker(QThread):
                 data_color = color.read()
                 data_level = level.read()
                 data_flow = flow.read()
+                data_valve = valve.read()
                 # signal to UI
                 self.color.done.emit(data_color.value)
                 self.level.done.emit(data_level.value)
                 self.flow.done.emit(data_flow.value)
+                self.valve.done.emit(data_valve.value)
             except Exception as e:
                 print("Error reading from the device: %s" % e)
 
