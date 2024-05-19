@@ -25,16 +25,14 @@ class PaintTank(Device):
         get level attribute
         range: 0 to 1
         """
-        # TODO: return level of simulated tank
-        return 0.5
+        return self.tank.get_level()
 
     @attribute(dtype=float)
     def flow(self):
         """
         get flow attribute
         """
-        # TODO: return flow of simulated tank
-        return 0
+        return self.tank.get_outflow()
 
     valve = attribute(label="valve", dtype=float,
                       access=AttrWriteType.READ_WRITE,
@@ -46,39 +44,36 @@ class PaintTank(Device):
         set valve attribute
         :param ratio: 0 to 1
         """
-        # TODO: set valve of simulated tank
-        pass
+        self.tank.set_valve(min(1, max(0, ratio)))
 
     def get_valve(self):
         """
         get valve attribute (range: 0 to 1)
         """
-        # TODO: get valve of simulated tank
-        return 0
+        return self.tank.get_valve()
 
     @attribute(dtype=str)
     def color(self):
         """
         get color attribute (hex string)
         """
-        # TODO: get color of simulated tank
-        return "#808080"  # grey
+        return self.tank.get_color_rgb()  # grey
 
     @command(dtype_out=float)
     def Fill(self):
         """
         command to fill up the tank with paint
         """
-        # TODO: fill simulated tank and return new level
-        return 0.5
+        self.tank.fill()
+        return self.tank.get_level()
 
     @command(dtype_out=float)
     def Flush(self):
         """
         command to flush all paint
         """
-        # TODO: flush simulated tank and return new level
-        return 0.5
+        self.tank.flush()
+        return self.tank.get_level()
 
 
 if __name__ == "__main__":
