@@ -328,7 +328,7 @@ class ColorMixingPlantWindow(QMainWindow):
         stationToolBar.addSeparator()
         stationToolBar.addSeparator()
 
-		#button : toolButton_4
+		#button : toolButton_5
         self.toolButton_5 = QPushButton()
         self.toolButton_5.setText("Station 5 ")
         self.toolButton_5.setCheckable(True)
@@ -341,7 +341,7 @@ class ColorMixingPlantWindow(QMainWindow):
         stationToolBar.addSeparator()
         stationToolBar.addSeparator()
 
-		#button : toolButton_4
+		#button : toolButton_6
         self.toolButton_6 = QPushButton()
         self.toolButton_6.setText("Station 6 ")
         self.toolButton_6.setCheckable(True)
@@ -373,7 +373,7 @@ class ColorMixingPlantWindow(QMainWindow):
         self.nbstation = 0
         self.station_layout = QStackedLayout()
 
-        for nbstation in range(NB_STATION):
+        for nbstation in range(1, NB_STATION+1):
             widget = QWidget()
 
             test = QVBoxLayout(widget)
