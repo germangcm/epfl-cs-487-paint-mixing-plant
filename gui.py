@@ -109,6 +109,8 @@ class PaintTankWidget(QWidget):
     def __init__(self, nbstation, name, width, height=100, fill_button=False, flush_button=False, valve_en=False,level_en=True):
         super().__init__()
         self.name = name
+        self.bFi = fill_button
+        self.bFl = flush_button
         self.nbstat = TANGO_NAME_PREFIX+"%s" % nbstation
         self.setGeometry(0, 0, width, height)
         self.setMinimumSize(width, height)
@@ -120,9 +122,9 @@ class PaintTankWidget(QWidget):
         self.worker.color.done.connect(self.setColor)
         self.worker.valve.done.connect(self.setValve)
         
-        self.buttonfi = QPushButton('Fill', self)
+        
         if fill_button:
-            
+            self.buttonfi = QPushButton('Fill', self)
             self.buttonfi.setToolTip('Fill up the tank with paint')
             self.buttonfi.clicked.connect(self.on_fill)
             self.buttonfi.setStyleSheet("border : 4px solid green; border-top-left-radius : 30px ;border-bottom-left-radius : 30px ; background-color : light grey;")
@@ -151,8 +153,9 @@ class PaintTankWidget(QWidget):
         self.slider.valueChanged[int].connect(self.changedValue)
         self.layout.addWidget(self.slider)
         
-        self.buttonfl = QPushButton('Flush', self)
+        
         if flush_button:
+            self.buttonfl = QPushButton('Flush', self)
             self.buttonfl = QPushButton('Flush', self)
             self.buttonfl.setToolTip('Flush the tank')
             self.buttonfl.clicked.connect(self.on_flush)
@@ -195,14 +198,16 @@ class PaintTankWidget(QWidget):
         """
         self.tank.fill_level = level
         self.label_level.setText("Level: %.1f %%" % (level * 100))
-        if level > 0.95:
+        if level > 0.95 and self.bFl:
             self.buttonfl.setStyleSheet("border : 4px solid red; border-top-left-radius : 30px ;border-bottom-left-radius : 30px ; background-color : light red;")
-        else:
-            self.buttonfl.setStyleSheet("border : 4px solid green; border-top-left-radius : 30px ;border-bottom-left-radius : 30px ; background-color : light grey;")
-        if level < 0.05:
+        else :
+            if self.bFl:
+                self.buttonfl.setStyleSheet("border : 4px solid green; border-top-left-radius : 30px ;border-bottom-left-radius : 30px ; background-color : light grey;")
+        if level < 0.05 and self.bFi:
             self.buttonfi.setStyleSheet("border : 4px solid red; border-top-left-radius : 30px ;border-bottom-left-radius : 30px ; background-color : light red;")
         else:
-            self.buttonfi.setStyleSheet("border : 4px solid green; border-top-left-radius : 30px ;border-bottom-left-radius : 30px ; background-color : light grey;")
+            if self.bFi:
+                self.buttonfi.setStyleSheet("border : 4px solid green; border-top-left-radius : 30px ;border-bottom-left-radius : 30px ; background-color : light grey;")
         self.tank.update()
 
     def setValve(self, valve):
