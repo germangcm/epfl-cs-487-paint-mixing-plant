@@ -30,7 +30,7 @@ class TankWidget(QWidget):
     MARGIN_BOTTOM = 30
     VALVE_WIDTH = 15
 
-    def __init__(self, tank_width, tank_height, level=0, valve=False):
+    def __init__(self, tank_width, tank_height, level=0, valve=True):
         super().__init__()
         self.fill_color = QColor("grey")
         self.fill_level = level
@@ -122,16 +122,18 @@ class PaintTankWidget(QWidget):
         
 
         if fill_button:
-            button = QPushButton('Fill', self)
-            button.setToolTip('Fill up the tank with paint')
-            button.clicked.connect(self.on_fill)
-            self.layout.addWidget(button)
+            self.buttonfi = QPushButton('Fill', self)
+            self.buttonfi.setToolTip('Fill up the tank with paint')
+            self.buttonfi.clicked.connect(self.on_fill)
+            self.buttonfi.setStyleSheet("border : 4px solid green; border-top-left-radius : 30px ;border-bottom-left-radius : 30px ; background-color : light grey;")
+            self.layout.addWidget(self.buttonfi)
 
         # label for level
         if level_en:
             self.label_level = QLabel("Level: --")
             self.label_level.setAlignment(Qt.AlignCenter)
             self.layout.addWidget(self.label_level)
+        
 
         # tank widget
         self.tank = TankWidget(width, height, valve=valve_en)
@@ -150,10 +152,11 @@ class PaintTankWidget(QWidget):
         self.layout.addWidget(self.slider)
 
         if flush_button:
-            button = QPushButton('Flush', self)
-            button.setToolTip('Flush the tank')
-            button.clicked.connect(self.on_flush)
-            self.layout.addWidget(button)
+            self.buttonfl = QPushButton('Flush', self)
+            self.buttonfl.setToolTip('Flush the tank')
+            self.buttonfl.clicked.connect(self.on_flush)
+            self.buttonfl.setStyleSheet("border : 4px solid green; border-top-left-radius : 30px ;border-bottom-left-radius : 30px ; background-color : light grey;")
+            self.layout.addWidget(self.buttonfl)
 
         self.setLayout(self.layout)
 
@@ -191,6 +194,14 @@ class PaintTankWidget(QWidget):
         """
         self.tank.fill_level = level
         self.label_level.setText("Level: %.1f %%" % (level * 100))
+        if level > 0.95:
+            self.buttonfl.setStyleSheet("border : 4px solid red; border-top-left-radius : 30px ;border-bottom-left-radius : 30px ; background-color : light red;")
+        else:
+            self.buttonfl.setStyleSheet("border : 4px solid green; border-top-left-radius : 30px ;border-bottom-left-radius : 30px ; background-color : light grey;")
+        if level < 0.05:
+            self.buttonfl.setStyleSheet("border : 4px solid red; border-top-left-radius : 30px ;border-bottom-left-radius : 30px ; background-color : light red;")
+        else:
+            self.buttonfl.setStyleSheet("border : 4px solid green; border-top-left-radius : 30px ;border-bottom-left-radius : 30px ; background-color : light grey;")
         self.tank.update()
 
     def setValve(self, valve):
