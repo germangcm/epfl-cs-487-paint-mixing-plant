@@ -120,9 +120,9 @@ class PaintTankWidget(QWidget):
         self.worker.color.done.connect(self.setColor)
         self.worker.valve.done.connect(self.setValve)
         
-
+        self.buttonfi = QPushButton('Fill', self)
         if fill_button:
-            self.buttonfi = QPushButton('Fill', self)
+            
             self.buttonfi.setToolTip('Fill up the tank with paint')
             self.buttonfi.clicked.connect(self.on_fill)
             self.buttonfi.setStyleSheet("border : 4px solid green; border-top-left-radius : 30px ;border-bottom-left-radius : 30px ; background-color : light grey;")
@@ -150,7 +150,8 @@ class PaintTankWidget(QWidget):
         self.timer_slider = None
         self.slider.valueChanged[int].connect(self.changedValue)
         self.layout.addWidget(self.slider)
-
+        
+        self.buttonfl = QPushButton('Flush', self)
         if flush_button:
             self.buttonfl = QPushButton('Flush', self)
             self.buttonfl.setToolTip('Flush the tank')
@@ -199,9 +200,9 @@ class PaintTankWidget(QWidget):
         else:
             self.buttonfl.setStyleSheet("border : 4px solid green; border-top-left-radius : 30px ;border-bottom-left-radius : 30px ; background-color : light grey;")
         if level < 0.05:
-            self.buttonfl.setStyleSheet("border : 4px solid red; border-top-left-radius : 30px ;border-bottom-left-radius : 30px ; background-color : light red;")
+            self.buttonfi.setStyleSheet("border : 4px solid red; border-top-left-radius : 30px ;border-bottom-left-radius : 30px ; background-color : light red;")
         else:
-            self.buttonfl.setStyleSheet("border : 4px solid green; border-top-left-radius : 30px ;border-bottom-left-radius : 30px ; background-color : light grey;")
+            self.buttonfi.setStyleSheet("border : 4px solid green; border-top-left-radius : 30px ;border-bottom-left-radius : 30px ; background-color : light grey;")
         self.tank.update()
 
     def setValve(self, valve):
