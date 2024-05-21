@@ -106,14 +106,15 @@ class PaintTankWidget(QWidget):
     Widget to hold a single paint tank, valve slider and command buttons
     """
 
-    def __init__(self, name, nbstation, width, height=100, fill_button=False, flush_button=False, valve_en=False,level_en=True):
+    def __init__(self, nbstation, name, width, height=100, fill_button=False, flush_button=False, valve_en=False,level_en=True):
         super().__init__()
-        self.name = name+"%s" % nbstation 
+        self.name = name
+        self.nbstat = TANGO_NAME_PREFIX+"%s" % nbstation
         self.setGeometry(0, 0, width, height)
         self.setMinimumSize(width, height)
         self.layout = QVBoxLayout()
         self.threadpool = QThreadPool()
-        self.worker = TangoBackgroundWorker(self.nbstation, self.name)
+        self.worker = TangoBackgroundWorker(self.name, self.nbstat)
         self.worker.level.done.connect(self.setLevel)
         self.worker.flow.done.connect(self.setFlow)
         self.worker.color.done.connect(self.setColor)
@@ -157,7 +158,7 @@ class PaintTankWidget(QWidget):
         self.setLayout(self.layout)
 
         # set the valve attribute to fully closed
-        worker = TangoWriteAttributeWorker(self.nbstation, self.name, TANGO_ATTRIBUTE_VALVE, self.slider.value() / 100.0)
+        worker = TangoWriteAttributeWorker(self.nbstat, self.name, TANGO_ATTRIBUTE_VALVE, self.slider.value() / 100.0)
         self.threadpool.start(worker)
         self.worker.start()
         # update the UI element
@@ -180,7 +181,7 @@ class PaintTankWidget(QWidget):
         self.timer_slider = None
 
         # set valve attribute
-        worker = TangoWriteAttributeWorker(self.nbstation, self.name, TANGO_ATTRIBUTE_VALVE, self.slider.value() / 100.0)
+        worker = TangoWriteAttributeWorker(self.nbstat, self.name, TANGO_ATTRIBUTE_VALVE, self.slider.value() / 100.0)
         worker.signal.done.connect(self.setValve)
         self.threadpool.start(worker)
 
@@ -791,10 +792,10 @@ class TangoWriteAttributeWorker(QRunnable):
     This is used to avoid blocking the main UI thread.
     """
 
-    def __init__(self, device, attribute, value):
+    def __init__(self, name, device, attribute, value):
         super().__init__()
         self.signal = WorkerSignal()
-        self.path = "%s/%s/%s" % (TANGO_NAME_PREFIX, device, attribute)
+        self.path = "%s/%s/%s" % (name, device, attribute)
         self.value = value
 
     @pyqtSlot()
@@ -821,7 +822,7 @@ class TangoRunCommandWorker(QRunnable):
     This is used to avoid blocking the main UI thread.
     """
 
-    def __init__(self, device, command, *args):
+    def __init__(self, name, device, command, *args):
         """
         creates a new instance for the given device instance and command
         :param device: device name
@@ -830,7 +831,7 @@ class TangoRunCommandWorker(QRunnable):
         """
         super().__init__()
         self.signal = WorkerSignal()
-        self.device = "%s/%s" % (TANGO_NAME_PREFIX, device)
+        self.device = "%s/%s" % (name, device)
         self.command = command
         self.args = args
 
@@ -858,14 +859,16 @@ class TangoBackgroundWorker(QThread):
     It will signal to the UI when new data is available.
     """
 
-    def __init__(self, name, interval=0.5):
+    def __init__(self, name,device, interval=0.5):
         """
         creates a new instance
-        :param name: device name
+        :param name: station name
+        :param device: device name
         :param interval: polling interval in seconds
         """
         super().__init__()
         self.name = name
+        self.device=device
         self.interval = interval
         self.level = WorkerSignal()
         self.flow = WorkerSignal()
@@ -879,12 +882,12 @@ class TangoBackgroundWorker(QThread):
         print("Starting TangoBackgroundWorker for '%s' tank" % self.name)
         # define attributes
         try:
-            level = AttributeProxy("%s/%s/%s" % (TANGO_NAME_PREFIX, self.name, TANGO_ATTRIBUTE_LEVEL))
-            flow = AttributeProxy("%s/%s/%s" % (TANGO_NAME_PREFIX, self.name, TANGO_ATTRIBUTE_FLOW))
-            color = AttributeProxy("%s/%s/%s" % (TANGO_NAME_PREFIX, self.name, TANGO_ATTRIBUTE_COLOR))
-            valve = AttributeProxy("%s/%s/%s" % (TANGO_NAME_PREFIX, self.name, TANGO_ATTRIBUTE_VALVE))
+            level = AttributeProxy("%s/%s/%s" % (self.name, self.device, TANGO_ATTRIBUTE_LEVEL))
+            flow = AttributeProxy("%s/%s/%s" % (self.name, self.device, TANGO_ATTRIBUTE_FLOW))
+            color = AttributeProxy("%s/%s/%s" % (self.name, self.device, TANGO_ATTRIBUTE_COLOR))
+            valve = AttributeProxy("%s/%s/%s" % (self.name, self.device, TANGO_ATTRIBUTE_VALVE))
         except Exception as e:
-            print("Error creating AttributeProxy for %s" % self.name)
+            print("Error creating AttributeProxy for %s" % self.device)
             return
 
         while True:
