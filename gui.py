@@ -9,6 +9,7 @@ from tango import AttributeProxy, DeviceProxy
 
 # prefix for all Tango device names
 TANGO_NAME_PREFIX = "epfl/station"
+
 #add station number as arg
 # definition of Tango attribute and command names
 TANGO_ATTRIBUTE_LEVEL = "level"
@@ -107,8 +108,7 @@ class PaintTankWidget(QWidget):
 
     def __init__(self, name, nbstation, width, height=100, fill_button=False, flush_button=False, valve_en=False,level_en=True):
         super().__init__()
-        self.name = name
-        self.nbstation = nbstation
+        self.name = name+"%s" % nbstation 
         self.setGeometry(0, 0, width, height)
         self.setMinimumSize(width, height)
         self.layout = QVBoxLayout()
@@ -217,14 +217,14 @@ class PaintTankWidget(QWidget):
         """
         callback method for the "Fill" button
         """
-        worker = TangoRunCommandWorker(self.nbstation, self.name, TANGO_COMMAND_FILL)
+        worker = TangoRunCommandWorker(self.name, TANGO_COMMAND_FILL)
         self.threadpool.start(worker)
 
     def on_flush(self):
         """
         callback method for the "Flush" button
         """
-        worker = TangoRunCommandWorker(self.nbstation, self.name, TANGO_COMMAND_FLUSH)
+        worker = TangoRunCommandWorker(self.name, TANGO_COMMAND_FLUSH)
         self.threadpool.start(worker)
 
 class Color(QWidget):
@@ -775,16 +775,7 @@ class ColorMixingPlantWindow(QMainWindow):
     def switch_home(self):
         self.num_page=0
         self.page_layout.setCurrentIndex(self.num_page)
-        self.update_title()
-        
-
-   
-
-
-   
-        
-      
-       
+        self.update_title()    
 
 
 class WorkerSignal(QObject):
@@ -800,10 +791,10 @@ class TangoWriteAttributeWorker(QRunnable):
     This is used to avoid blocking the main UI thread.
     """
 
-    def __init__(self, nbstation, device, attribute, value):
+    def __init__(self, device, attribute, value):
         super().__init__()
         self.signal = WorkerSignal()
-        self.path = "%s%s/%s/%s" % (TANGO_NAME_PREFIX,nbstation, device, attribute)
+        self.path = "%s/%s/%s" % (TANGO_NAME_PREFIX, device, attribute)
         self.value = value
 
     @pyqtSlot()
@@ -830,7 +821,7 @@ class TangoRunCommandWorker(QRunnable):
     This is used to avoid blocking the main UI thread.
     """
 
-    def __init__(self, nbstation, device, command, *args):
+    def __init__(self, device, command, *args):
         """
         creates a new instance for the given device instance and command
         :param device: device name
@@ -839,7 +830,7 @@ class TangoRunCommandWorker(QRunnable):
         """
         super().__init__()
         self.signal = WorkerSignal()
-        self.device = "%s%s/%s" % (TANGO_NAME_PREFIX, nbstation, device)
+        self.device = "%s/%s" % (TANGO_NAME_PREFIX, device)
         self.command = command
         self.args = args
 
@@ -867,16 +858,14 @@ class TangoBackgroundWorker(QThread):
     It will signal to the UI when new data is available.
     """
 
-    def __init__(self, nbstation, name, interval=0.5):
+    def __init__(self, name, interval=0.5):
         """
         creates a new instance
         :param name: device name
         :param interval: polling interval in seconds
-        :param nbstation : station index
         """
         super().__init__()
         self.name = name
-        self.nbstation = nbstation
         self.interval = interval
         self.level = WorkerSignal()
         self.flow = WorkerSignal()
@@ -890,10 +879,10 @@ class TangoBackgroundWorker(QThread):
         print("Starting TangoBackgroundWorker for '%s' tank" % self.name)
         # define attributes
         try:
-            level = AttributeProxy("%s%s/%s/%s" % (TANGO_NAME_PREFIX, self.nbstation, self.name, TANGO_ATTRIBUTE_LEVEL))
-            flow = AttributeProxy("%s%s/%s/%s" % (TANGO_NAME_PREFIX, self.nbstation, self.name, TANGO_ATTRIBUTE_FLOW))
-            color = AttributeProxy("%s%s/%s/%s" % (TANGO_NAME_PREFIX, self.nbstation, self.name, TANGO_ATTRIBUTE_COLOR))
-            valve = AttributeProxy("%s%s/%s/%s" % (TANGO_NAME_PREFIX, self.nbstation, self.name, TANGO_ATTRIBUTE_VALVE))
+            level = AttributeProxy("%s/%s/%s" % (TANGO_NAME_PREFIX, self.name, TANGO_ATTRIBUTE_LEVEL))
+            flow = AttributeProxy("%s/%s/%s" % (TANGO_NAME_PREFIX, self.name, TANGO_ATTRIBUTE_FLOW))
+            color = AttributeProxy("%s/%s/%s" % (TANGO_NAME_PREFIX, self.name, TANGO_ATTRIBUTE_COLOR))
+            valve = AttributeProxy("%s/%s/%s" % (TANGO_NAME_PREFIX, self.name, TANGO_ATTRIBUTE_VALVE))
         except Exception as e:
             print("Error creating AttributeProxy for %s" % self.name)
             return
