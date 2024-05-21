@@ -155,7 +155,7 @@ class PaintTankWidget(QWidget):
         
         
         if flush_button:
-            self.buttonfl = QPushButton('Flush', self)
+            
             self.buttonfl = QPushButton('Flush', self)
             self.buttonfl.setToolTip('Flush the tank')
             self.buttonfl.clicked.connect(self.on_flush)
