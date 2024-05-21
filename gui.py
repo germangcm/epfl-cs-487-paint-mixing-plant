@@ -114,7 +114,7 @@ class PaintTankWidget(QWidget):
         self.setMinimumSize(width, height)
         self.layout = QVBoxLayout()
         self.threadpool = QThreadPool()
-        self.worker = TangoBackgroundWorker(self.name, self.nbstat)
+        self.worker = TangoBackgroundWorker(self.nbstat, self.name)
         self.worker.level.done.connect(self.setLevel)
         self.worker.flow.done.connect(self.setFlow)
         self.worker.color.done.connect(self.setColor)
@@ -218,14 +218,14 @@ class PaintTankWidget(QWidget):
         """
         callback method for the "Fill" button
         """
-        worker = TangoRunCommandWorker(self.name, TANGO_COMMAND_FILL)
+        worker = TangoRunCommandWorker(self.nbstat, self.name, TANGO_COMMAND_FILL)
         self.threadpool.start(worker)
 
     def on_flush(self):
         """
         callback method for the "Flush" button
         """
-        worker = TangoRunCommandWorker(self.name, TANGO_COMMAND_FLUSH)
+        worker = TangoRunCommandWorker(self.nbstat, self.name, TANGO_COMMAND_FLUSH)
         self.threadpool.start(worker)
 
 class Color(QWidget):
@@ -859,7 +859,7 @@ class TangoBackgroundWorker(QThread):
     It will signal to the UI when new data is available.
     """
 
-    def __init__(self, name,device, interval=0.5):
+    def __init__(self, name, device, interval =0.5):
         """
         creates a new instance
         :param name: station name
@@ -868,7 +868,7 @@ class TangoBackgroundWorker(QThread):
         """
         super().__init__()
         self.name = name
-        self.device=device
+        self.device= device
         self.interval = interval
         self.level = WorkerSignal()
         self.flow = WorkerSignal()
