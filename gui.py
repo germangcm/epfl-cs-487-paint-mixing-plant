@@ -4,7 +4,7 @@ import signal
 
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
-from PyQt5.QtGui import QPainter, QColor, QPen
+from PyQt5.QtGui import QPainter, QColor, QPen, QPalette
 from tango import AttributeProxy, DeviceProxy
 
 # prefix for all Tango device names
@@ -227,6 +227,15 @@ class PaintTankWidget(QWidget):
         worker = TangoRunCommandWorker(self.nbstation, self.name, TANGO_COMMAND_FLUSH)
         self.threadpool.start(worker)
 
+class Color(QWidget):
+
+    def __init__(self, color, width):
+        super(Color, self).__init__()
+        self.setAutoFillBackground(True)
+        self.setGeometry(0, 0, width, 230)
+        palette = self.palette()
+        palette.setColor(QPalette.Window, QColor(color))
+        self.setPalette(palette)
 
 class ColorMixingPlantWindow(QMainWindow):
     """
@@ -351,7 +360,7 @@ class ColorMixingPlantWindow(QMainWindow):
         self.title_station.resize(100,100)
         self.title_station.setText("GENERAL OVERVIEW")
         self.title_station.setAlignment(Qt.AlignCenter)
-        self.title_station.setStyleSheet("QLabel {background : #9370DB};")
+        self.title_station.setStyleSheet("QLabel {background : #C9944C};")
 
 		
 
@@ -360,28 +369,29 @@ class ColorMixingPlantWindow(QMainWindow):
         hbox_title.addWidget(self.title_station)
         vbox.addLayout(hbox_title)
 
-        self.station = 0
+        self.nbstation = 0
         self.station_layout = QStackedLayout()
 
-        for station in range(NB_STATION):
+        for nbstation in range(NB_STATION):
             widget = QWidget()
 
             test = QVBoxLayout(widget)
 
             hbox = QHBoxLayout()
-            hbox.addWidget(PaintTankWidget(station, "cyan", width=150, fill_button=True))
-            hbox.addWidget(PaintTankWidget(station, "magenta", width=150, fill_button=True))
-            hbox.addWidget(PaintTankWidget(station, "yellow", width=150, fill_button=True))
-            hbox.addWidget(PaintTankWidget(station, "black", width=150, fill_button=True))
-            hbox.addWidget(PaintTankWidget(station, "white", width=150, fill_button=True))
+            hbox.addWidget(PaintTankWidget(nbstation, "cyan", height=200, width=150, fill_button=True))
+            hbox.addWidget(PaintTankWidget(nbstation, "magenta", width=150, fill_button=True))
+            hbox.addWidget(PaintTankWidget(nbstation, "yellow", width=150, fill_button=True))
+            hbox.addWidget(PaintTankWidget(nbstation, "black", width=150, fill_button=True))
+            hbox.addWidget(PaintTankWidget(nbstation, "white", width=150, fill_button=True))
 
             test.addLayout(hbox)
-
-            test.addWidget(PaintTankWidget(station, "mixer", width=860, flush_button=True))
-
+            hbox = QHBoxLayout()
+            hbox.addWidget(PaintTankWidget(nbstation, "mixer", width=600, flush_button=True))
+            hbox.addWidget(Color('red',width = 200))
+            test.addLayout(hbox)
             self.station_layout.addWidget(widget)
 
-        self.station_layout.setCurrentIndex(self.station)
+        self.station_layout.setCurrentIndex(self.nbstation)
 
 
 	#Tables
@@ -471,7 +481,6 @@ class ColorMixingPlantWindow(QMainWindow):
         self.table_layout.addLayout(self.event_layout)
 
 
-        #vbox.addLayout(table_layout) 
 
 #HOME PAGE
 
@@ -628,7 +637,7 @@ class ColorMixingPlantWindow(QMainWindow):
         self.event_table_6.horizontalHeader().setStretchLastSection(True)
 
 
-		#include widget in vbox
+		#include widget in the vbox
         self.vbox_station_1.addWidget(title_home_station_1)
         self.vbox_station_2.addWidget(title_home_station_2)
         self.vbox_station_3.addWidget(title_home_station_3)
@@ -693,7 +702,6 @@ class ColorMixingPlantWindow(QMainWindow):
             if page == 0 :
                 hbox = QHBoxLayout()
                 hbox.addLayout(self.vbox_home)
-                #hbox.addLayout(table_layout_event)
                 test.addLayout(hbox)
             if page == 1 :
                 vbox_page_alarm_event_table.addLayout(self.station_layout)
@@ -708,11 +716,6 @@ class ColorMixingPlantWindow(QMainWindow):
         self.page_layout.setCurrentIndex(self.num_page)
 
         vbox.addLayout(self.page_layout)       
-	
-	# Status bar
-        #self.statusBar = QStatusBar()
-        #self.setStatusBar(self.statusBar)
-	
 
         self.window.setLayout(vbox)
 
@@ -730,17 +733,17 @@ class ColorMixingPlantWindow(QMainWindow):
         self.num_page=1
         self.page_layout.setCurrentIndex(self.num_page)
 
-        self.station = number
-        self.station_layout.setCurrentIndex(self.station)
+        self.nbstation = number
+        self.station_layout.setCurrentIndex(self.nbstation)
 
         self.update_title()
-        self.update_button_station_look()
+        
     
     def update_title(self):
         if self.num_page==0:
             self.title_station.setText(f"GENERAL OVERVIEW")
         if self.num_page==1:
-            self.title_station.setText(f"MIXING PLANT --- <b>Station {self.station+1}</b>")
+            self.title_station.setText(f"MIXING PLANT --- <b>Station {self.nbstation+1}</b>")
 
     
     
@@ -773,7 +776,7 @@ class ColorMixingPlantWindow(QMainWindow):
         self.num_page=0
         self.page_layout.setCurrentIndex(self.num_page)
         self.update_title()
-        self.update_button_station_look()
+        
 
    
 
