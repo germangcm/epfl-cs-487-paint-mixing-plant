@@ -106,7 +106,7 @@ class PaintTankWidget(QWidget):
     Widget to hold a single paint tank, valve slider and command buttons
     """
 
-    def __init__(self, nbstation, name, width, height=100, fill_button=False, flush_button=False, valve_en=False,level_en=True):
+    def __init__(self, nbstation, name, width, height=100, fill_button=False, flush_button=False, valve_en=True,level_en=True):
         super().__init__()
         self.name = name
         self.bFi = fill_button
