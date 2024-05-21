@@ -1,5 +1,6 @@
+import sys
+import argparse
 from simulator import Simulator
-
 from tango import AttrWriteType
 from tango.server import Device, attribute, command, run
 
@@ -77,9 +78,23 @@ class PaintTank(Device):
 
 
 if __name__ == "__main__":
-    # start the simulator as a background thread
+    # Parse command line arguments for stations
+    parser = argparse.ArgumentParser(
+                    prog='PaintMixingStation.py',
+                    description='Start Paint Mixing Station device servers')
+    parser.add_argument('stations', nargs='+', help='List of paint mixing stations (e.g. station1 station2)')
+    args = parser.parse_args()
+
+    # Start the simulator as a background thread
     simulator = Simulator()
     simulator.start()
 
-    # start the Tango device server (blocking call)
-    run((PaintTank,))
+    # Dynamically create a device server for each station
+    device_servers = []
+    for station in args.stations:
+        for device_name in ["cyan", "magenta", "yellow", "black", "white", "mixer"]:
+            device_name_full = "epfl/%s/%s" % (station, device_name)
+            device_servers.append((PaintTank, device_name_full))
+
+    # Start the Tango device servers (blocking call)
+    run(device_servers)
